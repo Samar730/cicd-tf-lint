@@ -1,0 +1,41 @@
+name: Syntax validation workflow
+
+on:
+  push:
+
+jobs:
+  validation:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Terraform Setup
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Format check
+        run: |
+          cd terraform/
+          terraform fmt --check
+
+      - name: Terraform Init
+        run: |
+          cd terraform/
+          terraform init 
+
+      - name: Terraform Validate
+        run: |
+          cd terraform/
+          terraform validate 
+
+      - name: Install tflint
+        uses: terraform-linters/setup-tflint@v4
+
+      - name: Init tflint
+        run: tflint --init
+
+      - name: Terraform Linting
+        run: |
+          cd terraform/
+          tflint --recursive
